@@ -1,0 +1,64 @@
+How to get the client/mandt in amdp procedures
+data(lv_mandt) = session_context('CLIENT').
+
+lv_sydatum = session_context('SAP_SYSTEM_DATE');
+CLASS zysat_amdp_1 DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES : if_amdp_marker_hdb.
+    TYPES:
+      BEGIN OF ty_tcode,
+        tcode TYPE agval,
+        ttext TYPE ttext_stct,
+        role  TYPE agr_name,
+        rtext TYPE agr_title,
+      END OF ty_tcode,
+      tt_tcode     TYPE TABLE OF ty_tcode,
+      tt_zdktest01 TYPE TABLE OF zdktest01.
+
+    METHODS : get_t_code_role_matrix
+      IMPORTING value(lv_where) type string
+      EXPORTING
+        VALUE(ex_it_tcode_role) TYPE tt_zdktest01.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zysat_amdp_1 IMPLEMENTATION.
+
+  METHOD  get_t_code_role_matrix BY DATABASE PROCEDURE
+                                    FOR HDB
+                                    LANGUAGE SQLSCRIPT
+                                    OPTIONS READ-ONLY
+                                    USING zdktest01.
+
+    DECLARE lv_mandt VARchar( 3 );
+    lv_mandt = session_context( 'CLIENT' );
+    it_tcode_role = select * from zdktest01 where mandt = :lv_mandt;
+    ex_it_tcode_role = APPLY_FILTER ( :it_tcode_role, :lv_where );
+
+  ENDMETHOD.
+ENDCLASS.
+
+SE38 Program:
+tables ZDKTEST01.
+DATA : lt_test01 TYPE TABLE OF zdktest01 WITH HEADER LINE,
+       lo_oref   TYPE REF TO zysat_amdp_1.
+
+SELECT-OPTIONS ecode for ZDKTEST01-ecode.
+
+data(lv_where) = cl_shdb_seltab=>combine_seltabs( it_named_seltabs = value #( ( name = 'ECODE' dref = ref #( ecode[] ) ) )
+                                                   ).
+*                                                   iv_client_field = 'CLIENT'
+BREAK-POINT.
+CREATE OBJECT lo_oref.
+CALL METHOD lo_oref->get_t_code_role_matrix(
+                     EXPORTING lv_where = lv_where
+                     IMPORTING ex_it_tcode_role = lt_test01[] ).
+
+BREAK-POINT.
