@@ -1,0 +1,40 @@
+AMDP Method Call from Program and Calling an AMDP method from another AMDP method
+
+Here we have a single AMDP method:
+--  either class name/ object name
+using class name ==>
+  <class name>=><methodname>( );
+  <object>->methodname();
+  
+
+two amdp methods:
+CLASS zcl_flight_calc DEFINITION PUBLIC FINAL CREATE PUBLIC.
+PUBLIC SECTION.
+* Marker interface with SAP HANA DB as database type
+INTERFACES: if_amdp_marker_hdb.
+METHODS: get_flight_detail IMPORTING VALUE(iv_mandt) TYPE sy-mandt
+                                     VALUE(iv_carrid) TYPE sflight-carrid
+                           EXPORTING VALUE(et_flight) TYPE flighttab.
+PRIVATE SECTION.
+METHODS: get_flight_detail_db IMPORTING VALUE(iv_mandt) TYPE sy-mandt
+                                        VALUE(iv_carrid) TYPE sflight-carrid
+                              EXPORTING VALUE(et_flight) TYPE flighttab.
+ENDCLASS.
+
+CLASS zcl_flight_calc IMPLEMENTATION.
+METHOD get_flight_detail BY DATABASE PROCEDURE FOR HDB
+                        LANGUAGE SQLSCRIPT
+                        USING ZCL_FLIGHT_CALC=>GET_FLIGHT_DETAIL_DB.
+
+* CALLING ANOTHER AMDP METHOD INSIDE AN AMDP METHOD
+CALL "ZCL_FLIGHT_CALC=>GET_FLIGHT_DETAIL_DB"( iv_mandt => iv_mandt,
+                                              iv_carrid => iv_carrid,
+                                              et_flight => et_flight );
+ENDMETHOD.
+METHOD get_flight_detail_db BY DATABASE PROCEDURE FOR HDB 
+                            LANGUAGE SQLSCRIPT
+                            OPTIONS READ-ONLY USING SFLIGHT.
+* Implementation of the procedure in a DB-specific language
+et_flight = SELECT * FROM sflight WHERE mandt = iv_mandt AND carrid = iv_carrid;
+
+ENDMETHOD.
