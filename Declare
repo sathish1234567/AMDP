@@ -1,0 +1,5 @@
+Declare: used to declaring the varibales.
+syntax: 
+ declare <var> "$ABAP.TYPE( S_CARR_ID );
+         here S_CARR_ID --> is the data element; 
+              once assign the data element it is sending the chracteristics to the <var>.
