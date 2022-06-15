@@ -1,7 +1,9 @@
 How to get the client/mandt in amdp procedures
 data(lv_mandt) = session_context('CLIENT').
-
 lv_sydatum = session_context('SAP_SYSTEM_DATE');
+UNSET_INPUT( ) – clears the session value 
+
+
 CLASS zysat_amdp_1 DEFINITION
   PUBLIC
   CREATE PUBLIC .
