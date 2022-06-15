@@ -3,3 +3,12 @@ syntax:
  declare <var> "$ABAP.TYPE( S_CARR_ID );
          here S_CARR_ID --> is the data element; 
               once assign the data element it is sending the chracteristics to the <var>.
+              
+declare internal table:
+  DECLARE mytab table( mandt  "$ABAP.type( mandt )",
+                       uname  "$ABAP.type( syst_uname )",
+                       langu  "$ABAP.type( syst_langu )",
+                       datum  "$ABAP.type( syst_datum )",
+                       text   "$ABAP.type( line-text )",
+                       number "$ABAP.type( f )" );
+
