@@ -1,0 +1,22 @@
+SET:
+-- set the value to the session_context()
+-- syntax: set '<Session Var>' = <pass value/varaibles>;
+-- Ex: SET 'ZZ_CARRID' = 1234;
+       SET 'ZZ_CARRID' = :IV_CARRID;
+       
+Session_Context():
+--  get the values of sessions.
+--  Syntax: session_context( <Variables> );
+--          Ex: session_context( 'ZZ_CARRID' ) --> values is 1234.
+
+default session var
+aibles:
+1.  session_context( 'CLIENT' ) --> get the current system client No.
+2.  session_context( 'APPLICATIONUSER' ) --> get the current system user.
+3.  session_context( 'LANGU' ) --> get the user logon language.
+4.  session_context( 'SYSDATE' ) --> get the current date
+
+UNSET: 
+--  to clear the session data.
+-- syntax : unset '<varaible name>';
+    Ex: unset 'ZZ_CARRID'; 
