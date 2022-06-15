@@ -1,0 +1,39 @@
+Session Variables are global variables of the database system that contains information about the current context. 
+SAP HANA DB has special ABAP specific session variables whose counterparts matches with the ABAP system fields.
+
+Access in AMDP Methods:
+The predefined function SESSION_CONTEXT( )  is used to access the session variables of SAP HANA database . 
+
+Few session variables are as below:
+CLIENT                                   –   sy-mandt
+APPLICATIONUSER            –   sy-uname
+LOCALE_SAP                       –   sy-langu
+
+How they can be Accessed:
+SESSION_CONTEXT(‘CLIENT’) 
+SESSION_CONTEXT(‘APPLICATIONUSER’)
+SESSION_CONTEXT(‘LOCALE_SAP’)   
+
+Example:
+METHOD get_session_variables_amdp 
+                                    BY DATABASE PROCEDURE FOR HDB 
+                                    LANGUAGE SQLSCRIPT. 
+  clnt := session_context(‘CLIENT’); 
+  unam := session_context(‘APPLICATIONUSER’); 
+  lang := session_context(‘LOCALE_SAP’); 
+ENDMETHOD.
+
+Access in CDS Views
+Syntax – $Session.vname  can be used in CDS views to access the ABAP-specific session variable. The VNAME are as below:
+client                               –   sy-mandt
+user                                 –   sy-uname                     
+system-language      –  sy-langu
+
+Example:
+@AbapCatalog.sqlViewName: ‘CDS_SESSIONVAR’ 
+define view CDS_SESSIONVAR_DEMO
+   as select from demo_expressions {  
+         $session.client                         as sys_client,
+         $session.user                           as sys_user 
+         $session.system_language   as sys_language     
+        }
