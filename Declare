@@ -11,4 +11,9 @@ declare internal table:
                        datum  "$ABAP.type( syst_datum )",
                        text   "$ABAP.type( line-text )",
                        number "$ABAP.type( f )" );
+                       
+prvoiding values at declaration:
+DECLARE VI_COUNT INT := 0;
+  DECLARE VV_TITLE VARCHAR(50) := ' ';
+  DECLARE VD_PRICE decimal(5,2) := 0;
 
