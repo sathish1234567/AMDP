@@ -1,0 +1,58 @@
+CLASS amdp_class DEFINITION.
+  PUBLIC SECTION.
+* Marker interface with SAP HANA DB as database type
+  INTERFACES IF_AMDP_MARKER_DB_TYPE.
+  METHODS amdp_method.
+ENDCLASS.
+
+CLASS amdp_class  IMPLEMENTATION.
+* AMDP method 
+  METHOD amdp_method BY DATABASE PROCEDURE 
+        FOR       db_type
+        LANGUAGE  db_language
+        OPTIONS   db_options
+        USING     db_entity.
+ "Implementation of the procedure in a DB-specific language 
+  ENDMETHOD.
+ENDCLASS.
+
+FOR Hana:
+db_type : HDB
+db_language : SQLSCRIPT
+db_options : read-only
+db_entity  : table names
+
+Ex:
+
+CLASS zcl_flight_calc DEFINITION PUBLIC FINAL CREATE PUBLIC.
+ PUBLIC SECTION. 
+* Marker interface with SAP HANA DB as database type 
+INTERFACES: if_amdp_marker_hdb.
+METHODS: get_flight_detail 
+               IMPORTING VALUE(iv_carrid) TYPE sflight-carrid 
+               EXPORTING VALUE(et_flight) TYPE flighttab.
+ENDCLASS.
+
+CLASS zcl_flight_calc IMPLEMENTATION.
+METHOD get_flight_detail 
+                               BY DATABASE PROCEDURE FOR HDB 
+                               LANGUAGE SQLSCRIPT
+                               OPTIONS READ-ONLY 
+                               USING SFLIGHT.
+* Implementation of the procedure in a DB-specific language
+et_flight = SELECT * FROM sflight WHERE carrid = iv_carrid;
+ENDMETHOD.
+ENDCLASS.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Note:
+The above AMDP method is used just to read some data [OPTIONS READ-ONLY]. Lets add one more method where we can do change on DB record. 
+Then for such a method OPTIONS READ-ONLY must not be specified.
+
+ Important Points: 
+ ____________________
+
+1. Transaction control commands like COMMIT WORK /ROLLBACK WORK are not allowed inside AMDP method.
+
+2. Update statement can not be performed on BUFFERED tables inside AMDP method.
+
+3. AMDP are a part of native SQL and don't support automatic client handling. 
